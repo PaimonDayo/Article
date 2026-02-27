@@ -20,7 +20,7 @@ export default async function Home() {
 
         {reviews.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {reviews.map((review) => (
+            {reviews.map((review: any) => (
               <article
                 key={review.id}
                 className="group relative bg-[#1a1d24] rounded-2xl overflow-hidden shadow-lg border border-gray-800/50 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/10 flex flex-col"
@@ -60,11 +60,11 @@ export default async function Home() {
 
                   <div className="mt-auto pt-4 border-t border-gray-800">
                     <span className={`inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-md ${review.status === 'Finished' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                        review.status === 'Playing/Watching' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                          'bg-gray-500/10 text-gray-400 border border-gray-500/20'
+                      review.status === 'Playing/Watching' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                        'bg-gray-500/10 text-gray-400 border border-gray-500/20'
                       }`}>
                       <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${review.status === 'Finished' ? 'bg-emerald-400' :
-                          review.status === 'Playing/Watching' ? 'bg-blue-400' : 'bg-gray-400'
+                        review.status === 'Playing/Watching' ? 'bg-blue-400' : 'bg-gray-400'
                         }`}></span>
                       {review.status}
                     </span>
