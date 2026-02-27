@@ -40,3 +40,27 @@ export const getReviews = async () => {
         return [];
     }
 };
+
+export const getReview = async (id: string) => {
+    try {
+        const page: any = await notion.pages.retrieve({ page_id: id });
+        const imageProp = page.properties.Image?.files?.[0];
+        const imageUrl = imageProp?.file?.url || imageProp?.external?.url || null;
+
+        // Notionの「Review」プロパティのテキストをすべて結合
+        const reviewText = page.properties.Review?.rich_text?.map((text: any) => text.plain_text).join('') || '';
+
+        return {
+            id: page.id,
+            title: page.properties.Name?.title?.[0]?.plain_text || 'No Title',
+            type: page.properties.Type?.select?.name || 'Other',
+            status: page.properties.Status?.select?.name || 'Unknown',
+            rating: page.properties.Rating?.select?.name || '-',
+            review: reviewText,
+            imageUrl: imageUrl,
+        };
+    } catch (error) {
+        console.error('Error fetching from Notion:', error);
+        return null;
+    }
+};
