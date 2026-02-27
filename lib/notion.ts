@@ -47,8 +47,25 @@ export const getReview = async (id: string) => {
         const imageProp = page.properties.Image?.files?.[0];
         const imageUrl = imageProp?.file?.url || imageProp?.external?.url || null;
 
-        // Notionの「Review」プロパティのテキストをすべて結合
-        const reviewText = page.properties.Review?.rich_text?.map((text: any) => text.plain_text).join('') || '';
+        // Notionのページブロック（本文）を取得
+        const blocksResponse = await notion.blocks.children.list({ block_id: id });
+
+        // 取得したブロックからテキストを抽出（今回はparagraphとheadingのみを簡易的につなぐ形）
+        const reviewText = blocksResponse.results.map((block: any) => {
+            if (block.type === 'paragraph' && block.paragraph.rich_text.length > 0) {
+                return block.paragraph.rich_text.map((t: any) => t.plain_text).join('');
+            }
+            if (block.type === 'heading_1' && block.heading_1.rich_text.length > 0) {
+                return block.heading_1.rich_text.map((t: any) => t.plain_text).join('');
+            }
+            if (block.type === 'heading_2' && block.heading_2.rich_text.length > 0) {
+                return block.heading_2.rich_text.map((t: any) => t.plain_text).join('');
+            }
+            if (block.type === 'heading_3' && block.heading_3.rich_text.length > 0) {
+                return block.heading_3.rich_text.map((t: any) => t.plain_text).join('');
+            }
+            return '';
+        }).filter(Boolean).join('\n\n');
 
         return {
             id: page.id,
@@ -56,7 +73,7 @@ export const getReview = async (id: string) => {
             type: page.properties.Type?.select?.name || 'Other',
             status: page.properties.Status?.select?.name || 'Unknown',
             rating: page.properties.Rating?.select?.name || '-',
-            review: reviewText,
+            review: reviewText || page.properties.Review?.rich_text?.map((text: any) => text.plain_text).join('') || '', // 本文が空ならプロパティから
             imageUrl: imageUrl,
         };
     } catch (error) {
